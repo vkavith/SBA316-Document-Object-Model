@@ -86,8 +86,7 @@ function displayPets(filter = "all") {
       card.appendChild(info);
       card.appendChild(adoptBtn);
 
-      // Append card to pet list
-      //petList.appendChild(card);
+      
       //Append card to fragment instead direct to petList
       fragment.appendChild(card);
     }

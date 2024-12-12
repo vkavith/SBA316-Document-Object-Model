@@ -1,56 +1,54 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pet Store</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <nav>
-      <div class="pet-logo">Pet Store</div>
-      <!--div class="cart">Cart: <span id="cartCount">0</span></div-->
-    </nav>
+    <header>
+      <h1>Pet Store</h1>
+    </header>
 
     <main>
-      <section id="choosepet">
-        <button class="filter-buttn active" data-type="all">All</button>
-        <button class="filter-buttn" data-type="dog">Dogs</button>
-        <button class="filter-buttn" data-type="cat">Cats</button>
+      <section id="filters">
+        <button class="filter-btn active" data-type="all">All Pets</button>
+        <button class="filter-btn" data-type="dog">Dogs</button>
+        <button class="filter-btn" data-type="cat">Cats</button>
       </section>
 
-      <section id="pets" class="pet-grid"></section>
+      <section id="petList" class="pet-grid"></section>
 
       <form id="adoptForm" class="adopt-form hidden">
         <h2>Adoption Form</h2>
-        <div class="form-sub">
-          <input type="text" id="name" placeholder="Name" required />
-        </div>
-
-        <div class="form-sub">
-          <input type="email" id="email" placeholder="Email" required />
-        </div>
-
-        <div class="form-sub">
+        <div class="form-group">
           <input
-            type="telephone"
+            type="text"
+            id="name"
+            placeholder="Your Name"
+            required
+            minlength="2"
+          />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <input type="email" id="email" placeholder="Email" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <input
+            type="tel"
             id="phone"
             placeholder="Phone"
             required
             pattern="[0-9]{10}"
           />
+          <span class="error"></span>
         </div>
-
-        <div class="form-sub">
-          <textarea
-            id="message"
-            placeholder="You can adopt cat or dog or both"
-            required
-          ></textarea>
-        </div>
-
-        <button type="submit">Submit Application for Adoption</button>
+        <button type="submit">Submit Application</button>
       </form>
     </main>
-
     <script src="script.js"></script>
   </body>
 </html>

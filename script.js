@@ -1,157 +1,173 @@
-const petSection = document.getElementById("pets");
-const filterButton = document.querySelectorAll(".filter-buttn");
-const petadoptForm = document.getElementById("adoptForm");
+// Cache DOM elements
+const petList = document.getElementById("petList");
+const filterButtons = document.querySelectorAll(".filter-btn");
+const adoptForm = document.getElementById("adoptForm");
 
-//Pet content data decalre in a array
-
+// Pet data
 const pets = [
   {
     id: 101,
-    name: "dog-1",
+    name: "Shih Tzu",
     type: "dog",
     breed: "Shih Tzu",
     age: "6 months",
-    image: "",
+    image: "https://images.pexels.com/photos/3687770/pexels-photo-3687770.jpeg",
   },
   {
     id: 102,
-    name: "dog-2",
+    name: "Maltese",
     type: "dog",
     breed: "Maltese",
     age: "1 year",
-    image: "",
+    image: "https://images.pexels.com/photos/1458925/pexels-photo-1458925.jpeg",
   },
   {
     id: 103,
-    name: "cat-1",
+    name: "Persian",
     type: "cat",
     breed: "Persian",
     age: "2 years",
-    image: "",
+    image: "https://images.pexels.com/photos/1870376/pexels-photo-1870376.jpeg",
   },
   {
     id: 104,
-    name: "cat-2",
+    name: "Singapura",
     type: "cat",
     breed: "Singapura",
     age: "3 years",
-    image: "",
+    image: "https://images.pexels.com/photos/2071873/pexels-photo-2071873.jpeg",
   },
   {
     id: 105,
-    name: "dog-3",
+    name: "Cavalier",
     type: "dog",
     breed: "Cavalier",
     age: "3 months",
-    image: "",
+    image: "https://images.pexels.com/photos/2023384/pexels-photo-2023384.jpeg",
   },
 ];
 
+// Display pets function
 function displayPets(filter = "all") {
-  petSection.innerHTML = "";
+  petList.innerHTML = "";
 
-  for (let petloop of pets) {
-    if (filter === "all" || petloop.type === filter) {
+  //Create Document Fragment
+  const fragment = document.createDocumentFragment();
+
+  for (let pet of pets) {
+    if (filter === "all" || pet.type === filter) {
+      // Create card elements
       const card = document.createElement("div");
       card.className = "pet-card";
 
-      card.innerHTML = `
-            <img src = "${petloop.image}" alt = "${pet.name}">
-            <h3>${petloop.name}</h3>
-            <h4>${petloop.breed}, ${petloop.age} old </p>
-            <button onclick = "displayAdoptForm(${petloop.id})"> Adopt </button>
-            `;
+      // Create image
+      const img = document.createElement("img");
+      img.src = pet.image;
+      img.alt = pet.name;
+      img.className = "pet-image";
 
-      petSection.appendChild(card);
+      // Create name heading
+      const name = document.createElement("h3");
+      name.textContent = pet.name;
+
+      // Create info paragraph
+      const info = document.createElement("p");
+      info.textContent = `${pet.breed}, ${pet.age} old`;
+
+      // Create adopt button
+      const adoptBtn = document.createElement("button");
+      adoptBtn.textContent = "Adopt Me";
+      adoptBtn.className = "adopt-btn";
+      adoptBtn.dataset.petId = pet.id;
+
+      // Append all elements to card
+      card.appendChild(img);
+      card.appendChild(name);
+      card.appendChild(info);
+      card.appendChild(adoptBtn);
+
+      // Append card to pet list
+      //petList.appendChild(card);
+      //Append card to fragment instead direct to petList
+      fragment.appendChild(card);
     }
   }
+
+  // Append fragment to petList (here just single DOM update)
+  petList.appendChild(fragment);
 }
 
-function displayAdoptForm(petId) {
-  //find pet using for loop
-
-  let choosePet = null;
-  for (let i = 0; i < pets.length; i++) {
-    if (pets[i].id === petId) {
-      choosePet = pets[i];
-      break;
-    }
-  }
-
-  window.alert(`Thanks for choosing this pet to adopt ${choosePet.name}!`);
-
-  window.localStorage.setItem("checkedinPetId", petId);
-  petadoptForm.classList.remove("hidden");
-  petadoptForm.scrollIntoView({
-    behavior: "smooth",
-    block: "end",
-    inline: "nearest",
-  });
-}
-
-const filterSection = document.getElementById("choosepet");
-filterSection.addEventListener("click", (e) => {
-  if (e.target.classList.contains("filter-buttn")) {
+// Filter button click handler
+document.getElementById("filters").addEventListener("click", (e) => {
+  if (e.target.classList.contains("filter-btn")) {
+    // Remove active class from siblings
     const siblings = e.target.parentNode.children;
-    for (let sibloop of siblings) {
-      sibloop.classList.remove("active");
+    for (let sibling of siblings) {
+      sibling.classList.remove("active");
     }
 
+    // Add active class to clicked button
     e.target.classList.add("active");
     displayPets(e.target.dataset.type);
   }
 });
 
-petadoptForm.addEventListener("submit", function (e) {
+// Show adoption form
+petList.addEventListener("click", (e) => {
+  if (e.target.classList.contains("adopt-btn")) {
+    const petId = e.target.dataset.petId;
+    localStorage.setItem("selectedPetId", petId);
+    adoptForm.classList.remove("hidden");
+    window.scrollTo({
+      top: 100,
+      left: 100,
+      behavior: "smooth",
+    });
+  }
+});
+
+// Form validation and submission
+adoptForm.addEventListener("submit", function (e) {
   e.preventDefault();
 
   const name = document.getElementById("name");
   const email = document.getElementById("email");
   const phone = document.getElementById("phone");
-  const message = document.getElementById("message");
 
   let isValid = true;
-  let errorMessage = "";
 
-  if (name.ariaValueMax.length < 1) {
-    name.style.borderColor = "red";
-    errorMessage += "Name should be entered  \n\n";
+  if (name.value.length < 1) {
+    name.nextElementSibling.style.display = "block";
+    name.nextElementSibling.textContent = "Name must be at least 1 character";
     isValid = false;
   }
 
-  if (!email.value.includes("@")) {
-    email.style.borderColor = "red";
-    errorMessage += "Valid email should be entered \n\n";
+  if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    email.nextElementSibling.style.display = "block";
+    email.nextElementSibling.textContent = "Please enter a valid email";
     isValid = false;
   }
 
   if (!phone.value.match(/^[0-9]{10}$/)) {
-    phone.style.borderColor = "red";
-    errorMessage += "Phone number should be 10 digits \n\n";
+    phone.nextElementSibling.style.display = "block";
+    phone.nextElementSibling.textContent = "Phone must be 10 digits";
     isValid = false;
   }
 
-  if (!isValid) {
-    //Validation alert message
-    window.alert(errorMessage);
-    return;
-  }
-
-  const petId = localStorage.getItem("checkedinPetId");
-  let pet = null;
-  for (let p of pets) {
-    if (p.id === parseInt(petId)) {
-      pet = p;
-      break;
+  if (isValid) {
+    const petId = localStorage.getItem("selectedPetId");
+    let pet = null;
+    for (let p of pets) {
+      if (p.id === parseInt(petId)) {
+        pet = p;
+        break;
+      }
     }
+    window.alert(`Thank you for adopting ${pet.name}!`);
+    adoptForm.reset();
+    adoptForm.classList.add("hidden");
   }
-  //Fires when user resets a form
-  petadoptForm.reset();
-
-  petadoptForm.classList.add("hidden");
 });
 
-window.onload = () => {
-  displayPets();
-  window.alert("Welcome to Pet Store! Find your adorable companion");
-};
+//Make it again to Initial display
+displayPets();
